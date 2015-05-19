@@ -6,7 +6,7 @@ var mockery = require('mockery'),
 
 
 var api = nock("http://status.vatsim.net").get('/').reply(200, fs.readFileSync('./test/testdata/status.vatsim.net.txt', { encoding: 'ascii' }))
-describe('serverlist-reader', function() {
+describe('serverlistreader', function() {
 
 	var serverListReader;
 	
@@ -17,7 +17,7 @@ describe('serverlist-reader', function() {
 
 	 beforeEach(function() {
 	        // mockery.registerAllowable('../lib/serverlist-reader', true); // Allow our module under test to be loaded normally as well
-	        serverListReader = require('../lib/serverlist-reader');
+	        serverListReader = require('../lib/serverlistreader');
 	    });
 	 
 	 afterEach(function() {
