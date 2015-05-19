@@ -3,8 +3,6 @@ nock      = require('nock'),
 http = require('http'),
 fs = require('fs');
 
-
-
 describe('datafeedreader', function() {
 
 	var datafeedReader;
@@ -16,14 +14,6 @@ describe('datafeedreader', function() {
 	
 	beforeEach(function() {
 		httpmock = nock("http://someurl.com").get('/').reply(200, fs.readFileSync('./test/testdata/vatsim-data.txt', { encoding: 'ascii' }))
-	});
-
-	afterEach(function() {
-		// mockery.deregisterAll();    // Deregister all Mockery mocks from node's module cache
-	});
-
-	after(function() {
-		// mockery.disable(); // Disable Mockery after tests are completed
 	});
 
 	describe('readDatafeed', function() {
@@ -69,8 +59,6 @@ describe('datafeedreader', function() {
 						heading: 290};
 
 				assert.deepEqual(data.clients[1], expectedpilot);
-
-				// line 213: EDDT_TWR:1306829:Christoph Stadtmueller:ATC:124.520:52.56000:13.28833:0:::0::::EUROPE-CC:100:2::4:40::::::::::::::::$ voice1.vacc-sag.org/eddt_twr^�TEGEL TOWER^�Monitor ATIS on 125.900:20150518210512:20150518180255::::
 
 				done(err);
 			});
