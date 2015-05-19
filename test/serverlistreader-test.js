@@ -17,7 +17,7 @@ describe('serverlistreader', function() {
 
 	 beforeEach(function() {
 	        // mockery.registerAllowable('../lib/serverlist-reader', true); // Allow our module under test to be loaded normally as well
-	        serverListReader = require('../lib/serverlistreader');
+	        serverListReader = require('../lib/serverlistreader').serverlistreader;
 	    });
 	 
 	 afterEach(function() {

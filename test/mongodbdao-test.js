@@ -2,13 +2,13 @@ var assert = require('assert'),
 	nock = require('nock'),
 	http = require('http'),
 	fs = require('fs'),
-	datafeedReader = require('../lib/datafeedreader.js'),
+	datafeedReader = require('../lib/datafeedreader.js').datafeedreader,
 	mongoClient = require('mongodb').MongoClient;
 
 describe('mongodbdao', function() {
 
 	before(function() {
-		mongodbdao = require('../lib/mongodbdao');
+		mongodbdao = require('../lib/mongodbdao').mongodbdao;
 	});
 	
 	beforeEach(function() {
@@ -46,7 +46,6 @@ describe('mongodbdao', function() {
 	describe('getOnlineClients', function() {
 		
 		var checkReadClients = function(result, done) { 
-			console.log("result", result[1]);
 			assert.equal(result[1].CID, "1141545");
 			done();
 		};

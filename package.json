@@ -2,7 +2,7 @@
   "name": "node-datacollector",
   "version": "0.1.0",
   "description": "node-datacollector",
-  "main": "hello-world-server.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified! Configure in package.json\" && exit 1"
   },
