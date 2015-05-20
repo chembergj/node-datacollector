@@ -15,8 +15,12 @@ describe('mongodbdao', function() {
 		httpmock = nock("http://someurl.com").get('/').reply(200, fs.readFileSync('./test/testdata/vatsim-data.txt', { encoding: 'ascii' }))
 	});
 
-	afterEach(function(done) {
-		mongodbdao.deleteAllOnlineClients(function(err, result) { done(); });
+	after(function(done) {
+		mongodbdao.deleteAllOnlineClients(function(err) { 
+			mongodbdao.deleteClientQueue(function(err) {
+				done(); 
+			});
+		});
 	});
 	
 	describe('insertOnlineClients', function() {
@@ -58,6 +62,42 @@ describe('mongodbdao', function() {
 						assert(err == null);
 						checkReadClients(result, done);
 					});
+				});
+			});
+		});
+	});	
+	
+	describe('queueClientsForProcessing', function() {
+		
+		var checkQueuedClients = function(expected, done) {
+			mongoClient.connect(mongodbdao._url, function(err, db) {
+				
+				db.collection(mongodbdao._collection_clientqueue).find().toArray(function(err, docs) {
+					db.close();
+					assert.equal(docs.length, expected);
+					assert.equal(docs[0].timestamp.getTime(),  new Date(2015, 4, 20, 8, 37, 0).getTime());
+					assert.equal(docs[0].clients.length, 424);
+					done();
+				});
+			});
+		};
+		
+		it("should queue clients", function(done) {
+			datafeedReader.readDatafeed('http://someurl.com', function(err, data) {
+				assert.equal(data.clients.length, 424);
+				mongodbdao.queueClientsForProcessing(new Date(2015, 4, 20, 8, 37, 0), data.clients, function(err) {
+					assert(err == null);
+					checkQueuedClients(1, done);
+				});
+			});
+		});
+		
+		it("should not queue clients from same data batch", function(done) {
+			datafeedReader.readDatafeed('http://someurl.com', function(err, data) {
+				assert.equal(data.clients.length, 424);
+				mongodbdao.queueClientsForProcessing(new Date(2015, 4, 20, 8, 37, 0), data.clients, function(err) {
+					assert(err == null);
+					checkQueuedClients(1, done);
 				});
 			});
 		});

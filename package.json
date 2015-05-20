@@ -18,7 +18,8 @@
   },
   "dependencies": {
     "mongodb": "^2.0.33",
-    "mysql": "^2.6.2"
+    "mysql": "^2.6.2",
+    "winston": "^1.0.0"
   },
   "devDependencies": {
     "mocha": "^2.2.5",

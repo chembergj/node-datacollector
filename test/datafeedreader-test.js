@@ -18,8 +18,6 @@ describe('datafeedreader', function() {
 
 	describe('readDatafeed', function() {
 		it("should parse and return general data", function(done) {
-			console.log("datafeedReader: ", datafeedReader);
-			console.log("datafeedReader.readDatafeed: ", datafeedReader.readDatafeed);
 			datafeedReader.readDatafeed('http://someurl.com', function(err, data) {
 				assert.equal(data.general.version, 8);
 				assert.equal(data.general.reload, 2);
