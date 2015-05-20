@@ -15,7 +15,24 @@ vatstatconfig = {
 
 winston.add(winston.transports.File, { filename: 'datacollector.log' });
 
-var readAndStoreAndQueueOnlineClient = function(callback) {
+var refreshAndQueueOnlineClients = function(data, callback) {
+	
+	mongodbdao.deleteAllOnlineClients(function(err) {
+		var date = new Date(
+				data.general.update.substr(0, 4) + '-' +
+				data.general.update.substr(4, 2) + '-' +
+				data.general.update.substr(6, 2) + 'T' +
+				data.general.update.substr(8, 2) + ':' +
+				data.general.update.substr(10, 2) + ':' +
+				data.general.update.substr(12, 2) + 'Z');
+					
+		mongodbdao.insertAndQueueOnlineClients(date, data.clients, function(err) {
+			callback(err, data);
+		});
+	});
+};
+
+var processOnlineClientBatch = function(callback) {
 	var chosenServer = vatstatconfig.getRandomServer();
 	winston.info('Loading data from ' + chosenServer);
 	
@@ -24,17 +41,7 @@ var readAndStoreAndQueueOnlineClient = function(callback) {
 			callback(err);
 		}
 		else {
-			var date = new Date(
-					parseInt(data.general.update.substr(0, 4)),
-					parseInt(data.general.update.substr(4, 2)) - 1,
-					parseInt(data.general.update.substr(6, 2)),
-					parseInt(data.general.update.substr(8, 2)),
-					parseInt(data.general.update.substr(10, 2)),
-					parseInt(data.general.update.substr(12, 2)), 0);
-						
-			mongodbdao.insertAndQueueOnlineClients(date, data.clients, function(err) {
-				callback(err, data);
-			});
+			refreshAndQueueOnlineClients(data, callback);
 		}
 	});
 }
@@ -49,10 +56,10 @@ serverlistreader.readServerList('http://status.vatsim.net', function(err, server
 		vatstatconfig.serverlist = serverlist;
 		winston.info('Read ' + serverlist.length + ' dataservers');
 		
-		readAndStoreAndQueueOnlineClient(function(err, data) {
+		processOnlineClientBatch(function(err, data) {
 			
 			winston.info('Scheduling data fetch every ' + data.general.reload + ' minutes');
-			var intervalObj = setInterval(readAndStoreAndQueueOnlineClient, parseInt(data.general.reload)*60000, function(err, data) {
+			var intervalObj = setInterval(processOnlineClientBatch, parseInt(data.general.reload)*60000, function(err, data) {
 				if(err != null) {
 					winston.error('Error calling readAndStoreAndQueueOnlineClient: ', { error: err});
 				}

@@ -102,5 +102,37 @@ describe('mongodbdao', function() {
 			});
 		});
 	});	
+	
+	describe('getOldestFromClientQueue', function() {
+		
+		it("should return null when queue is empty", function(done) {
+			
+			mongodbdao.getOldestFromClientQueue(function(err, data) {
+					assert(err == null);
+					assert(data == null);
+					done();
+			});
+		});
+	
+		it("should find oldest client batch", function(done) {
+			datafeedReader.readDatafeed('http://someurl.com', function(err, data) {
+				assert.equal(data.clients.length, 424);
+				mongodbdao.queueClientsForProcessing(new Date(2015, 4, 20, 8, 37, 0), data.clients, function(err) {
+					assert(err == null);
+					mongodbdao.queueClientsForProcessing(new Date(2015, 4, 20, 8, 37, 1), data.clients, function(err) {
+						assert(err == null);
+						mongodbdao.getOldestFromClientQueue(function(err, data) {
+								assert(err == null);
+								assert.equal(data.timestamp.getTime(), new Date(2015, 4, 20, 8, 37, 0).getTime());
+								done();
+							});
+						});
+					});
+				});
+			});
+		});
+		
+	
+	
 
 });
