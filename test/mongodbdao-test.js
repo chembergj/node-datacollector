@@ -8,7 +8,7 @@ var assert = require('assert'),
 describe('mongodbdao', function() {
 
 	before(function() {
-		mongodbdao = require('../lib/mongodbdao').getmongodbdao('_unittest');
+		mongodbdao = require('../lib/mongodbdao').mongodbdao;
 	});
 	
 	beforeEach(function() {
@@ -26,7 +26,7 @@ describe('mongodbdao', function() {
 	describe('insertOnlineClients', function() {
 		
 		var checkInsertedClients = function(done) {
-			mongoClient.connect(mongodbdao.getdburl(), function(err, db) {
+			mongoClient.connect(mongodbdao._url, function(err, db) {
 				
 				db.collection(mongodbdao._collection_onlineclients).find().toArray(function(err, docs) {
 					db.close();
@@ -70,7 +70,7 @@ describe('mongodbdao', function() {
 	describe('queueClientsForProcessing', function() {
 		
 		var checkQueuedClients = function(expected, done) {
-			mongoClient.connect(mongodbdao.getdburl(), function(err, db) {
+			mongoClient.connect(mongodbdao._url, function(err, db) {
 				
 				db.collection(mongodbdao._collection_clientqueue).find().toArray(function(err, docs) {
 					db.close();

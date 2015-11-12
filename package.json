@@ -17,7 +17,6 @@
     "test": "test"
   },
   "dependencies": {
-    "exectimer": "^1.0.2",
     "mongodb": "^2.0.33",
     "mysql": "^2.6.2",
     "winston": "^1.0.0"
